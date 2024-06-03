@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "152333808278",
+    "project_id": "firelearn-45b7c",
+    "storage_bucket": "firelearn-45b7c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152333808278:android:bdb5bc45ab03c9427648b7",
+        "android_client_info": {
+          "package_name": "com.example.firelearn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVq740GANCeGbaorcunew-7ilQLJu9ISU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
