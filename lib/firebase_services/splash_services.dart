@@ -9,7 +9,7 @@ class SplashServices {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const Login(),
+          builder: (context) => Login(),
         ),
       );
     });
