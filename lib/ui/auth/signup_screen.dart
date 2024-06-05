@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firelearn/ui/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 
@@ -5,17 +7,20 @@ class Signup extends StatefulWidget {
   const Signup({super.key});
 
   @override
-  State<Signup> createState() => _LoginState();
+  State<Signup> createState() => _SignupState();
 }
 
-class _LoginState extends State<Signup> {
+class _SignupState extends State<Signup> {
+  bool loading = false;
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final userNameController = TextEditingController();
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
@@ -25,7 +30,6 @@ class _LoginState extends State<Signup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // automaticallyImplyLeading: false,
         title: const Text(
           "SIGN UP",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -37,34 +41,30 @@ class _LoginState extends State<Signup> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Email and Password form
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    // User Name field
                     TextFormField(
                       keyboardType: TextInputType.text,
-                      controller: emailController,
+                      controller: userNameController,
                       decoration: const InputDecoration(
                           hintText: "Username", prefixIcon: Icon(Icons.man)),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-                    // Email field
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Please Enter Email";
                         }
-                        if (value.contains("@") == false) {
+                        if (!value.contains("@")) {
                           return "Invalid Email";
                         }
-
                         return null;
                       },
                       controller: emailController,
@@ -74,8 +74,6 @@ class _LoginState extends State<Signup> {
                     const SizedBox(
                       height: 20,
                     ),
-
-                    // Password field
                     TextFormField(
                       keyboardType: TextInputType.text,
                       validator: (value) {
@@ -95,19 +93,40 @@ class _LoginState extends State<Signup> {
                   ],
                 )),
           ),
-
-          // Login button
           Center(
             child: RoundButton(
+              loading: loading,
               title: 'Sign up',
               onTap: () {
-                if (_formKey.currentState!.validate()) {}
+                if (_formKey.currentState!.validate()) {
+                  setState(() {
+                    loading = true;
+                  });
+                  _auth
+                      .createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text)
+                      .then((value) {
+                    setState(() {
+                      loading = false;
+                    });
+                    // Navigate to the next screen or show success message
+                  }).catchError((error) {
+                    setState(() {
+                      loading = false;
+                    });
+                    // Show error message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                        error.toString(),
+                      )),
+                    );
+                  });
+                }
               },
             ),
           ),
-
-          // SignUP Text
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
