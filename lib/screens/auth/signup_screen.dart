@@ -121,7 +121,7 @@ class _SignupState extends State<Signup> {
                     setState(() {
                       loading = false;
                     });
-                    // Navigate to the next screen or show success message
+                    // Navigate to the next screen & show success message
                     _showSuccessMessage();
                     Navigator.push(
                         context,
