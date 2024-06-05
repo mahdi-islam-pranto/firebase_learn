@@ -1,5 +1,7 @@
-import 'package:firelearn/ui/auth/signup_screen.dart';
-import 'package:firelearn/ui/widgets/round_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firelearn/screens/all_post.dart';
+import 'package:firelearn/screens/auth/signup_screen.dart';
+import 'package:firelearn/screens/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,9 +13,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  bool loading = false;
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -21,6 +26,16 @@ class _LoginState extends State<Login> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+  }
+
+  // show success msg
+  void _showSuccessMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Login successful!'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -96,9 +111,38 @@ class _LoginState extends State<Login> {
             // Login button
             Center(
               child: RoundButton(
+                loading: loading,
                 title: 'Login',
                 onTap: () {
-                  if (_formKey.currentState!.validate()) {}
+                  if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      loading = true;
+                    });
+                    _auth
+                        .signInWithEmailAndPassword(
+                            email: emailController.text.toString(),
+                            password: passwordController.text.toString())
+                        .then((value) {
+                      setState(() {
+                        loading = false;
+                      });
+                      // Navigate to the next screen or show success message
+                      _showSuccessMessage();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Post()));
+                    }).catchError((error) {
+                      setState(() {
+                        loading = false;
+                      });
+                      // Show error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                          error.toString(),
+                        )),
+                      );
+                    });
+                  }
                 },
               ),
             ),

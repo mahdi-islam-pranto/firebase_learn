@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firelearn/ui/widgets/round_button.dart';
+import 'package:firelearn/screens/auth/login_screen.dart';
+import 'package:firelearn/screens/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 
 class Signup extends StatefulWidget {
@@ -24,6 +25,16 @@ class _SignupState extends State<Signup> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+  }
+
+  // show success msg
+  void _showSuccessMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Registration successful!'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -111,6 +122,12 @@ class _SignupState extends State<Signup> {
                       loading = false;
                     });
                     // Navigate to the next screen or show success message
+                    _showSuccessMessage();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Login(),
+                        ));
                   }).catchError((error) {
                     setState(() {
                       loading = false;

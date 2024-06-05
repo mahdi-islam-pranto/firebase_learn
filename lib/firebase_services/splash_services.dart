@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:firelearn/ui/auth/login_screen.dart';
+import 'package:firelearn/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashServices {
