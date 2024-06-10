@@ -16,6 +16,7 @@ class _AddPostState extends State<AddPost> {
   bool loading = false;
 
   final postController = TextEditingController();
+  final titleController = TextEditingController();
 
   // post added msg
   void showPostAddedMsg() {
@@ -42,10 +43,19 @@ class _AddPostState extends State<AddPost> {
               height: 20,
             ),
             TextFormField(
+              controller: titleController,
+              maxLines: 2,
+              decoration: const InputDecoration(
+                  hintText: "Write post title", border: OutlineInputBorder()),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            TextFormField(
               controller: postController,
               maxLines: 10,
               decoration: const InputDecoration(
-                  hintText: "What's on your mind?",
+                  hintText: "What's on your mind? ",
                   border: OutlineInputBorder()),
             ),
             const SizedBox(
@@ -54,6 +64,10 @@ class _AddPostState extends State<AddPost> {
             RoundButton(
               title: "Add Post",
               onTap: () {
+                DateTime now = DateTime.now();
+                int year = now.year;
+                int month = now.month;
+                int day = now.day;
                 setState(() {
                   loading = true;
                 });
@@ -61,9 +75,9 @@ class _AddPostState extends State<AddPost> {
                 databaseRef
                     .child(DateTime.now().microsecondsSinceEpoch.toString())
                     .set({
-                  'title': postController.text.toString(),
+                  'title': titleController.text.toString(),
                   'description': postController.text.toString(),
-                  // 'time': timeController.text.toString(),
+                  'time': "$year - $month - $day",
                   'id': DateTime.now().microsecondsSinceEpoch.toString()
                 }).then((value) {
                   setState(() {

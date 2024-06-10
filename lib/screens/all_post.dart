@@ -53,8 +53,10 @@ class _PostState extends State<Post> {
               query: ref,
               itemBuilder: (context, snapshot, animation, index) {
                 return ListTile(
+                  trailing: Text(snapshot.child('time').value.toString()),
                   title: Text(snapshot.child('title').value.toString()),
-                  subtitle: Text(snapshot.child('id').value.toString()),
+                  subtitle:
+                      Text(snapshot.child('description').value.toString()),
                 );
               },
             ),
