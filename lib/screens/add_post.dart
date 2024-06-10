@@ -1,3 +1,4 @@
+import 'package:firelearn/screens/all_post.dart';
 import 'package:firelearn/screens/widgets/round_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,7 +11,7 @@ class AddPost extends StatefulWidget {
 }
 
 class _AddPostState extends State<AddPost> {
-  DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+  DatabaseReference databaseRef = FirebaseDatabase.instance.ref('Post');
 
   bool loading = false;
 
@@ -41,6 +42,7 @@ class _AddPostState extends State<AddPost> {
               height: 20,
             ),
             TextFormField(
+              controller: postController,
               maxLines: 10,
               decoration: const InputDecoration(
                   hintText: "What's on your mind?",
@@ -55,15 +57,25 @@ class _AddPostState extends State<AddPost> {
                 setState(() {
                   loading = true;
                 });
-
-                databaseRef.child('Post').set({
+// adding node to the database (create data as child - sub child)
+                databaseRef
+                    .child(DateTime.now().microsecondsSinceEpoch.toString())
+                    .set({
                   'title': postController.text.toString(),
+                  'description': postController.text.toString(),
+                  // 'time': timeController.text.toString(),
                   'id': DateTime.now().microsecondsSinceEpoch.toString()
                 }).then((value) {
                   setState(() {
                     loading = false;
                   });
                   showPostAddedMsg();
+                  // return to post page
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Post(),
+                      ));
                 }).catchError((error) {
                   setState(() {
                     loading = false;

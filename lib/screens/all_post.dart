@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firelearn/screens/add_post.dart';
 import 'package:firelearn/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
   //firebase init
   FirebaseAuth _auth = FirebaseAuth.instance;
+  final ref = FirebaseDatabase.instance.ref('Post');
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +46,21 @@ class _PostState extends State<Post> {
                 ));
           },
           child: const Icon(Icons.add)),
+      body: Column(
+        children: [
+          Expanded(
+            child: FirebaseAnimatedList(
+              query: ref,
+              itemBuilder: (context, snapshot, animation, index) {
+                return ListTile(
+                  title: Text(snapshot.child('title').value.toString()),
+                  subtitle: Text(snapshot.child('id').value.toString()),
+                );
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }
