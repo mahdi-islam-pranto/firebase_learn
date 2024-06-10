@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firelearn/screens/add_post.dart';
 import 'package:firelearn/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +34,15 @@ class _PostState extends State<Post> {
               icon: const Icon(Icons.logout))
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddPost(),
+                ));
+          },
+          child: const Icon(Icons.add)),
     );
   }
 }
