@@ -38,6 +38,7 @@ class _PostState extends State<Post> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.green,
           onPressed: () {
             Navigator.push(
                 context,
@@ -48,15 +49,33 @@ class _PostState extends State<Post> {
           child: const Icon(Icons.add)),
       body: Column(
         children: [
+          // fetch data from database using FirebaseAnimatedList widget
           Expanded(
             child: FirebaseAnimatedList(
               query: ref,
               itemBuilder: (context, snapshot, animation, index) {
-                return ListTile(
-                  trailing: Text(snapshot.child('time').value.toString()),
-                  title: Text(snapshot.child('title').value.toString()),
-                  subtitle:
-                      Text(snapshot.child('description').value.toString()),
+                return Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: ListTile(
+                    tileColor: Colors.green[50],
+                    // post title
+                    title: Text(snapshot.child('title').value.toString()),
+                    // post description
+                    subtitle:
+                        Text(snapshot.child('description').value.toString()),
+                    // time
+                    trailing: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          snapshot.child('time').value.toString(),
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
