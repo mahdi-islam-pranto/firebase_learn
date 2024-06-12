@@ -13,10 +13,33 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  //firebase init
+  //firebase inits
   FirebaseAuth _auth = FirebaseAuth.instance;
   final ref = FirebaseDatabase.instance.ref('Post');
+  // controllers
   final searchFilter = TextEditingController();
+  final updateTitleController = TextEditingController();
+  final updateDescriptionController = TextEditingController();
+
+  // post added msg
+  void showPostUpdateMsg() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Post Updated Successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  // post delete msg
+  void showPostDeleteMsg() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Post Deleted Successfully'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,25 +130,59 @@ class _PostState extends State<Post> {
                   return Padding(
                     padding: const EdgeInsets.all(10),
                     child: ListTile(
-                      tileColor: Colors.green[50],
-                      // post title
-                      title: Text(snapshot.child('title').value.toString()),
-                      // post description
-                      subtitle:
-                          Text(snapshot.child('description').value.toString()),
-                      // time
-                      trailing: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            snapshot.child('time').value.toString(),
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.black54),
-                          ),
-                        ],
-                      ),
-                    ),
+                        tileColor: Colors.green[50],
+                        // post title
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(snapshot.child('title').value.toString()),
+                            Text(
+                              snapshot.child('time').value.toString(),
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                        // post description
+                        subtitle: Text(
+                            snapshot.child('description').value.toString()),
+                        // time
+                        trailing: PopupMenuButton(
+                          icon: const Icon(Icons.more_vert),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                                child: ListTile(
+                              onTap: () {
+                                myAlertDialog(
+                                    // old title
+                                    snapshot.child('title').value.toString(),
+                                    //old description
+                                    snapshot
+                                        .child('description')
+                                        .value
+                                        .toString(),
+                                    // post id
+                                    snapshot.child('id').value.toString());
+                              },
+                              leading: const Icon(Icons.edit_outlined),
+                              title: const Text("Edit"),
+                            )),
+                            PopupMenuItem(
+                                child: ListTile(
+                              onTap: () {
+                                ref
+                                    .child(
+                                        snapshot.child('id').value.toString())
+                                    .remove()
+                                    .then((value) {
+                                  showPostDeleteMsg();
+                                });
+                              },
+                              leading: Icon(Icons.delete_outline),
+                              title: Text("Delete"),
+                            )),
+                          ],
+                        )),
                   );
 
                   // search condition using title
@@ -160,9 +217,76 @@ class _PostState extends State<Post> {
                 }
               },
             ),
-          )
+          ),
         ],
       ),
+    );
+  }
+
+// function for showing popup menu to update and delete post
+  Future<void> myAlertDialog(String title, description, id) async {
+    updateTitleController.text = title;
+    updateDescriptionController.text = description;
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: updateTitleController,
+                  decoration: const InputDecoration(
+                    hintText: "title",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                TextField(
+                  controller: updateDescriptionController,
+                  maxLines: 6, // Reduced maxLines to avoid excessive space
+                  decoration: const InputDecoration(
+                    hintText: "description",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                //update post title and description
+                ref.child(id).update({
+                  "title": updateTitleController.text.toString(),
+                  "description": updateDescriptionController.text.toString()
+                }).then((value) {
+                  showPostUpdateMsg();
+                }).catchError((error) {
+                  // Show error message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                      error.toString(),
+                    )),
+                  );
+                });
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text("Update"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

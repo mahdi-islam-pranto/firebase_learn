@@ -70,17 +70,17 @@ class _AddPostState extends State<AddPost> {
                   int year = now.year;
                   int month = now.month;
                   int day = now.day;
+
+                  String id = DateTime.now().microsecondsSinceEpoch.toString();
                   setState(() {
                     loading = true;
                   });
                   // adding node to the database (create data as child - sub child)
-                  databaseRef
-                      .child(DateTime.now().microsecondsSinceEpoch.toString())
-                      .set({
+                  databaseRef.child(id).set({
                     'title': titleController.text.toString(),
                     'description': postController.text.toString(),
                     'time': "$year - $month - $day",
-                    'id': DateTime.now().microsecondsSinceEpoch.toString()
+                    'id': id,
                   }).then((value) {
                     setState(() {
                       loading = false;
