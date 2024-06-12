@@ -80,8 +80,8 @@ class _PostState extends State<Post> {
               controller: searchFilter,
               decoration: const InputDecoration(
                 hintText: "Search",
-                border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green)),
+                // border: OutlineInputBorder(
+                //     borderSide: BorderSide(color: Colors.green)),
               ),
               onChanged: (String value) {
                 setState(() {});
@@ -120,7 +120,11 @@ class _PostState extends State<Post> {
           Expanded(
             child: FirebaseAnimatedList(
               query: ref,
-              defaultChild: const Text("Loading"),
+              defaultChild: const SizedBox(
+                height: 900.0,
+                width: 900.0,
+                child: Center(child: CircularProgressIndicator()),
+              ),
               itemBuilder: (context, snapshot, animation, index) {
                 // title from firebase
                 final title = snapshot.child('title').value.toString();
@@ -130,6 +134,7 @@ class _PostState extends State<Post> {
                   return Padding(
                     padding: const EdgeInsets.all(10),
                     child: ListTile(
+                        shape: Border.all(),
                         tileColor: Colors.green[50],
                         // post title
                         title: Row(
